@@ -1,4 +1,3 @@
-from threading import Thread
 from time import sleep
 
 from scapy.arch import get_if_list
