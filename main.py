@@ -4,14 +4,13 @@ from scapy.arch import get_if_list
 
 from src import discover
 
-config = dict()
-config["hosts"] = dict()
+hosts = dict()
 
 
 if __name__ == "__main__":
     for interface in get_if_list():
-        config["hosts"][interface] = dict()
-        discover.Discover(config, interface).start()
+        hosts[interface] = dict()
+        discover.Discover(hosts, interface).start()
     while True:
-        print(config["hosts"])
+        print(hosts)
         sleep(10)

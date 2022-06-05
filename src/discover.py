@@ -11,7 +11,7 @@ from scapy.sendrecv import sniff
 
 class Discover(threading.Thread):
 
-    def __init__(self, config: dict, interface: str):
+    def __init__(self, hosts: dict, interface: str):
         """
         Discovers other hosts in the local network in a background thread
 
@@ -19,7 +19,7 @@ class Discover(threading.Thread):
             :param interface: The interface on which this thread operates
         """
         super(Discover, self).__init__()
-        self.config = config
+        self.hosts = hosts
         self.interface = interface
 
     def stop(self):
@@ -40,11 +40,11 @@ class Discover(threading.Thread):
                 :param mac: The mac address of the discovered host
                 :param ip: The ip address of the discovered host
             """
-            hosts = self.config["hosts"][self.interface]
-            if mac not in hosts:
-                hosts.update(dict({mac: {ip}}))
-            elif ip not in hosts[mac]:
-                hosts[mac].add(ip)
+            iface_hosts = self.hosts["hosts"][self.interface]
+            if mac not in iface_hosts:
+                iface_hosts.update(dict({mac: {ip}}))
+            elif ip not in iface_hosts[mac]:
+                iface_hosts[mac].add(ip)
 
 
         def filter_host(mac: str, ip: str):
