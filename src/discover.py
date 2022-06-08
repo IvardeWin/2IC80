@@ -41,7 +41,7 @@ class Discover(threading.Thread):
                 :param mac: The mac address of the discovered host
                 :param ip: The ip address of the discovered host
             """
-            iface_hosts = self.hosts["hosts"][self.interface]
+            iface_hosts = self.hosts[self.interface]
             if mac not in iface_hosts:
                 iface_hosts.update(dict({mac: {ip}}))
             elif ip not in iface_hosts[mac]:
