@@ -21,6 +21,7 @@ class Discover(threading.Thread):
         super(Discover, self).__init__()
         self.hosts = hosts
         self.interface = interface
+        self._stop = threading.Event()
 
     def stop(self):
         """
