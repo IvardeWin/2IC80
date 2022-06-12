@@ -1,3 +1,4 @@
+from tabnanny import verbose
 import threading
 
 from scapy import packet
@@ -6,7 +7,7 @@ from scapy.arch import get_if_hwaddr
 from scapy.error import Scapy_Exception
 from scapy.layers.inet import IP
 from scapy.layers.l2 import ARP, Ether
-from scapy.sendrecv import sniff
+from scapy.sendrecv import sniff, srp
 
 
 class Discover(threading.Thread):
@@ -92,3 +93,8 @@ class Discover(threading.Thread):
         except Scapy_Exception:
             print(f"Could not operate on interface {self.interface}")
             self.stop()
+
+    def active(self):
+        ip = "10.0.2.15"
+        frame = ARP(pdst = ip) / Ether(dst = "ff:ff:ff:ff:ff:ff")
+        srp(frame, timeout = 1, verbose = False)
