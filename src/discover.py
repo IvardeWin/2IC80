@@ -1,9 +1,7 @@
-from tabnanny import verbose
 import threading
 
 from scapy import packet
-from scapy.arch import get_if_addr
-from scapy.arch import get_if_hwaddr
+from scapy.arch import get_if_addr, get_if_hwaddr
 from scapy.error import Scapy_Exception
 from scapy.layers.inet import IP
 from scapy.layers.l2 import ARP, Ether
@@ -95,6 +93,9 @@ class Discover(threading.Thread):
             self.stop()
 
     def active(self):
-        ip = "10.0.2.15"
-        frame = ARP(pdst = ip) / Ether(dst = "ff:ff:ff:ff:ff:ff")
-        srp(frame, timeout = 1, verbose = False)
+        try:
+            ip = get_if_addr(self.interface) + "/24"
+            frame = ARP(pdst = ip) / Ether(dst = "ff:ff:ff:ff:ff:ff")
+            srp(frame, timeout = 1, verbose = False)
+        except:
+            print()
