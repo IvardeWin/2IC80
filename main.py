@@ -1,4 +1,17 @@
-from src import net
+from time import sleep
 
-if __name__ == '__main__':
-    net.test()
+from scapy.arch import get_if_list
+
+from src import discover
+
+hosts = dict()
+
+if __name__ == "__main__":
+    for interface in get_if_list():
+        hosts[interface] = dict()
+        disc = discover.Discover(hosts, interface)
+        disc.start()
+        disc.active()
+    while True:
+        print(hosts)
+        sleep(10)
