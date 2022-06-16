@@ -34,24 +34,25 @@ if __name__ == '__main__':
     active_discover_interfaces = list()
     while True:
         user_input = input("[y/n]\n")
-        if user_input == "n":
+        if user_input == "y" or user_input == "n":
             break
-        elif user_input == "y":
-            while True:
-                user_input = input("Name of interface to actively discover on, or 'done' once finished:\n")
-                if user_input in chosen_interfaces:
-                    if user_input not in active_discover_interfaces:
-                        active_discover_interfaces.append(user_input)
-                        print(f"Currently selected interfaces: {active_discover_interfaces}")
-                    else:
-                        print("This interface has already been selected")
-                elif user_input == "all":
-                    active_discover_interfaces = chosen_interfaces
+
+    if user_input == "y":
+        while True:
+            user_input = input("Name of interface to actively discover on, or 'done' once finished:\n")
+            if user_input in chosen_interfaces:
+                if user_input not in active_discover_interfaces:
+                    active_discover_interfaces.append(user_input)
                     print(f"Currently selected interfaces: {active_discover_interfaces}")
-                elif user_input == "done":
-                    break
                 else:
-                    print("The name you gave does not match any of the chosen interfaces")
+                    print("This interface has already been selected")
+            elif user_input == "all":
+                active_discover_interfaces = chosen_interfaces
+                print(f"Currently selected interfaces: {active_discover_interfaces}")
+            elif user_input == "done":
+                break
+            else:
+                print("The name you gave does not match any of the chosen interfaces")
 
     print(f"Now starting discovery...  press [ENTER] once the desired hosts have been discovered.")
     for interface in chosen_interfaces:
