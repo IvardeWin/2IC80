@@ -4,13 +4,64 @@ from src import discover
 from scapy.arch import get_if_list
 
 hosts = dict()
+discover_threads = dict()
 
 if __name__ == '__main__':
-    for interface in get_if_list():
+    available_interfaces = get_if_list()
+    print(f"The following interfaces were found: {available_interfaces}")
+    print("Please type the names of the interfaces you want to discover hosts on, "
+          "type 'done' once all desired interfaces have been input.")
+    chosen_interfaces = list()
+    while True:
+        user_input = input("Name of interface to discover on, or 'done' once finished:\n")
+        if user_input in available_interfaces:
+            if user_input not in chosen_interfaces:
+                chosen_interfaces.append(user_input)
+                print(f"Currently selected interfaces: {chosen_interfaces}")
+            else:
+                print("This interface has already been selected")
+        elif user_input == "done":
+            break
+        else:
+            print("The name you gave does not match any of the available interfaces")
+
+    print("Do you want to actively discover on any of the selected interfaces? "
+          "This will generate large amounts of traffic as every possible IP address "
+          "in the subnet will be pinged.")
+    active_discover_interfaces = list()
+    while True:
+        user_input = input("[y/n]\n")
+        if user_input == "n":
+            break
+        elif user_input == "y":
+            while True:
+                user_input = input("Name of interface to actively discover on, or 'done' once finished:\n")
+                if user_input in chosen_interfaces:
+                    if user_input not in active_discover_interfaces:
+                        active_discover_interfaces = active_discover_interfaces.append(user_input)
+                        print(f"Currently selected interfaces: {active_discover_interfaces}")
+                    else:
+                        print("This interface has already been selected")
+                elif user_input == "done":
+                    break
+                else:
+                    print("The name you gave does not match any of the chosen interfaces")
+
+    print(f"Now starting discovery...  press [ENTER] once the desired hosts have been discovered.")
+    # Start passively listening on all chosen interfaces
+    for interface in chosen_interfaces:
         hosts[interface] = dict()
-        disc = discover.Discover(hosts, interface)
-        disc.start()
-        disc.active()
+        discover_threads[interface] = discover.Discover(hosts, interface)
+        discover_threads[interface].start()
+        if interface in active_discover_interfaces:
+            discover_threads[interface].active()
+    input()
+    print("Hosts discovered:")
+    for interface in hosts:
+        print(f"{interface}")
+        for mac in interface:
+            for ip in mac:
+                print(f"  {mac}  -  {ip}")
 
     arp_spoofing = arp.ARPSpoofing(
         interface="enp0s3",

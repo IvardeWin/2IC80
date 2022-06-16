@@ -14,7 +14,7 @@ class Discover(threading.Thread):
         """
         Discovers other hosts in the local network in a background thread
 
-            :param config: The configuration dictionary that stores all discovered hosts
+            :param hosts: The configuration dictionary that stores all discovered hosts
             :param interface: The interface on which this thread operates
         """
         super(Discover, self).__init__()
@@ -43,9 +43,10 @@ class Discover(threading.Thread):
             iface_hosts = self.hosts[self.interface]
             if mac not in iface_hosts:
                 iface_hosts.update(dict({mac: {ip}}))
+                print(f"New host discovered on {self.interface}, MAC: {mac} IP: {ip}")
             elif ip not in iface_hosts[mac]:
                 iface_hosts[mac].add(ip)
-
+                print(f"New IP discovered on {self.interface} for host with MAC: {mac}, IP: {ip}")
 
         def filter_host(mac: str, ip: str):
             """
@@ -64,7 +65,6 @@ class Discover(threading.Thread):
             if ip == get_if_addr(self.interface):
                 return
             local_host_discovered(mac, ip)
-
 
         def packet_sniffed(pkt: packet):
             """
@@ -94,8 +94,8 @@ class Discover(threading.Thread):
 
     def active(self):
         try:
-            ip = get_if_addr(self.interface) + "/24"
-            frame = ARP(pdst = ip) / Ether(dst = "ff:ff:ff:ff:ff:ff")
-            srp(frame, timeout = 1, verbose = False)
-        except:
-            print()
+            ip = f"{get_if_addr(self.interface)}/24"
+            frame = ARP(pdst=ip) / Ether(dst="ff:ff:ff:ff:ff:ff")
+            srp(frame, timeout=1, verbose=False)
+        except Exception:
+            print(Exception)
