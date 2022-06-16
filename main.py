@@ -20,6 +20,8 @@ if __name__ == '__main__':
                 print(f"Currently selected interfaces: {chosen_interfaces}")
             else:
                 print("This interface has already been selected")
+        elif user_input == "all":
+            chosen_interfaces = available_interfaces
         elif user_input == "done":
             break
         else:
@@ -42,6 +44,8 @@ if __name__ == '__main__':
                         print(f"Currently selected interfaces: {active_discover_interfaces}")
                     else:
                         print("This interface has already been selected")
+                elif user_input == "all":
+                    active_discover_interfaces = chosen_interfaces
                 elif user_input == "done":
                     break
                 else:
