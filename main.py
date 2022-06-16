@@ -38,7 +38,7 @@ if __name__ == '__main__':
                 user_input = input("Name of interface to actively discover on, or 'done' once finished:\n")
                 if user_input in chosen_interfaces:
                     if user_input not in active_discover_interfaces:
-                        active_discover_interfaces = active_discover_interfaces.append(user_input)
+                        active_discover_interfaces.append(user_input)
                         print(f"Currently selected interfaces: {active_discover_interfaces}")
                     else:
                         print("This interface has already been selected")
