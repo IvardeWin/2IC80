@@ -48,7 +48,6 @@ if __name__ == '__main__':
                     print("The name you gave does not match any of the chosen interfaces")
 
     print(f"Now starting discovery...  press [ENTER] once the desired hosts have been discovered.")
-    # Start passively listening on all chosen interfaces
     for interface in chosen_interfaces:
         hosts[interface] = dict()
         discover_threads[interface] = discover.Discover(hosts, interface)
@@ -56,6 +55,9 @@ if __name__ == '__main__':
         if interface in active_discover_interfaces:
             discover_threads[interface].active()
     input()
+    for interface in chosen_interfaces:
+        discover_threads[interface].stop()
+
     print("Hosts discovered:")
     for interface in hosts:
         print(f"{interface}")
