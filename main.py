@@ -105,7 +105,7 @@ if __name__ == '__main__':
     def get_ips_at_interface(iface: str):
         ips = list()
         for mac_address in hosts[iface]:
-            ips = ips.append(hosts[iface][mac_address])
+            ips.append(hosts[iface][mac_address])
         return ips
 
     spoofed_ips = list()
