@@ -105,8 +105,13 @@ if __name__ == '__main__':
     def get_ips_at_interface(iface: str):
         ips = list()
         for mac_address in hosts[iface]:
+            print(mac_address)
             ips.append(hosts[iface][mac_address])
+            print(hosts[iface][mac_address])
         return ips
+
+    print(arp_spoof_victim_if)
+    print(get_ips_at_interface(arp_spoof_victim_if))
 
     spoofed_ips = list()
     while True:
@@ -126,7 +131,8 @@ if __name__ == '__main__':
         elif user_input == "done":
             break
         else:
-            print("The name you gave does not match any of the chosen interfaces")
+            print("The name you gave does not match any of the chosen IP addresses")
+
     print("Ready to start ARP spoofing, press [ENTER] to start.")
     arp_spoofing = arp.ARPSpoofing(
         interface=arp_spoof_victim_if,

@@ -28,6 +28,12 @@ class Discover(threading.Thread):
         """
         self._stop.set()
 
+    def is_stopped(self):
+        """
+        Returns whether this thread has been stopped
+        """
+        return self._stop.isSet()
+
     def run(self):
         """
         Starts the background thread
@@ -80,22 +86,23 @@ class Discover(threading.Thread):
                 filter_host(pkt[Ether].dst, pkt[ARP].pdst)
 
         # Attempt to sniff for packets on the current interface
-        try:
-            sniff(iface=self.interface, count=0, store=0, prn=packet_sniffed)
-        except IndexError:
-            print(f"Layer not found")
-            self.stop()
-        except OSError:
-            print(f"Could not open the adapter for interface {self.interface}")
-            self.stop()
-        except Scapy_Exception:
-            print(f"Could not operate on interface {self.interface}")
-            self.stop()
+        while not self.is_stopped():
+            try:
+                sniff(iface=self.interface, store=0, timeout=1, prn=packet_sniffed)
+            except IndexError:
+                print(f"Layer not found")
+                self.stop()
+            except OSError:
+                print(f"Could not open the adapter for interface {self.interface}")
+                self.stop()
+            except Scapy_Exception:
+                print(f"Could not operate on interface {self.interface}")
+                self.stop()
 
     def active(self):
         try:
             ip = f"{get_if_addr(self.interface)}/24"
             frame = ARP(pdst=ip) / Ether(dst="ff:ff:ff:ff:ff:ff")
             srp(frame, timeout=1, verbose=False)
-        except Exception:
-            print(Exception)
+        except Exception as e:
+            print(e)
