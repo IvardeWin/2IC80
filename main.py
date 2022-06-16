@@ -116,22 +116,17 @@ if __name__ == '__main__':
     spoofed_ips = list()
     while True:
         user_input = input("IP address that will be spoofed:\n")
-        if user_input in get_ips_at_interface(arp_spoof_victim_if):
-            if user_input == arp_spoof_victim_ip:
-                print("You can't spoof the victim's own IP")
-            elif user_input not in spoofed_ips:
-                spoofed_ips.append(user_input)
-                print(f"IPs whose packets will be redirected to you: {spoofed_ips}")
-            else:
-                print("This IP has already been selected")
+        if user_input == arp_spoof_victim_ip:
+            print("You can't spoof the victim's own IP")
+        elif user_input in spoofed_ips:
+            print("This IP has already been selected")
         elif user_input == "all":
-            spoofed_ips = get_ips_at_interface(arp_spoof_victim_if)
+            spoofed_ips.append(get_ips_at_interface(arp_spoof_victim_if))
             spoofed_ips.remove(arp_spoof_victim_ip)
-            print(f"IPs whose packets will be redirected to you: {spoofed_ips}")
         elif user_input == "done":
             break
         else:
-            print("The name you gave does not match any of the chosen IP addresses")
+            spoofed_ips.append(user_input)
 
     print("Ready to start ARP spoofing, press [ENTER] to start.")
     arp_spoofing = arp.ARPSpoofing(
