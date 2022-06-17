@@ -1,6 +1,7 @@
 from src import arp_spoof as arp
 from src import dns_spoof as dns
-from src import discover
+from src import discover_active
+from src import discover_passive
 from scapy.arch import get_if_list
 
 hosts = dict()
@@ -57,10 +58,10 @@ if __name__ == '__main__':
     print(f"Now starting discovery...  press [ENTER] once the desired hosts have been discovered.")
     for interface in chosen_interfaces:
         hosts[interface] = dict()
-        discover_threads[interface] = discover.Discover(hosts, interface)
+        discover_threads[interface] = discover_passive.Discover(hosts, interface)
         discover_threads[interface].start()
         if interface in active_discover_interfaces:
-            discover_threads[interface].active()
+            discover_active.discover(interface)
     input()
     for interface in chosen_interfaces:
         discover_threads[interface].stop()
