@@ -48,10 +48,10 @@ class Discover(threading.Thread):
             """
             iface_hosts = self.hosts[self.interface]
             if mac not in iface_hosts:
-                iface_hosts.update(dict({mac: [ip]}))
+                iface_hosts.update(dict({mac: {ip}}))
                 print(f"New host discovered on {self.interface}, MAC: {mac} IP: {ip}")
             elif ip not in iface_hosts[mac]:
-                iface_hosts[mac].append(ip)
+                iface_hosts[mac].add(ip)
                 print(f"New IP discovered on {self.interface} for host with MAC: {mac}, IP: {ip}")
 
         def filter_host(mac: str, ip: str):
