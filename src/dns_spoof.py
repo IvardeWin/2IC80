@@ -64,7 +64,6 @@ class DNSSpoofing(threading.Thread):
             if not (received_packet[DNSQR].qname.decode("utf8")[:-1] in self.domain_names):
                 # TODO: Either remove or this logging or make it conditional
                 print(f"{received_packet[DNSQR].qname.decode('utf8')[:-1]} not a targeted Domain")
-                received_packet.show()
                 return
             # Packet sent by a target host?
             if not (received_packet[IP].src in self.victims):

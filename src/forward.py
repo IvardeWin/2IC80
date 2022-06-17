@@ -36,6 +36,7 @@ class Forwarding(threading.Thread):
                 return
             elif DNS in received_packet and received_packet[DNS].qr == 0:
                 # TODO: check if packet should be forwarded and possible perform SSL stripping
+                print("Received a DNS packet")
                 return
             elif received_packet[ARP].pdst != self.host_ip:
                 for mac in self.hosts[self.interface]:

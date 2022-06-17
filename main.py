@@ -25,6 +25,7 @@ if __name__ == '__main__':
         elif user_input == "all":
             chosen_interfaces = available_interfaces
             print(f"Currently selected interfaces: {chosen_interfaces}")
+            break
         elif user_input == "done":
             break
         else:
@@ -51,6 +52,7 @@ if __name__ == '__main__':
             elif user_input == "all":
                 active_discover_interfaces = chosen_interfaces
                 print(f"Currently selected interfaces: {active_discover_interfaces}")
+                break
             elif user_input == "done":
                 break
             else:
@@ -107,9 +109,7 @@ if __name__ == '__main__':
     def get_ips_at_interface(iface: str):
         ips = list()
         for mac_address in hosts[iface]:
-            print(mac_address)
             ips.extend(hosts[iface][mac_address])
-            print(hosts[iface][mac_address])
         return ips
 
     spoofed_ips = list()
@@ -127,6 +127,7 @@ if __name__ == '__main__':
             spoofed_ips = get_ips_at_interface(arp_spoof_victim_if)
             spoofed_ips.remove(arp_spoof_victim_ip)
             print(f"IPs whose packets will be redirected to you: {spoofed_ips}")
+            break
         elif user_input == "done":
             break
         else:
@@ -148,7 +149,7 @@ if __name__ == '__main__':
     input("Press [enter] to start DNS spoofing")
     dns_spoofing = dns.DNSSpoofing(
         interface=arp_spoof_victim_if,
-        domain_names=["tue.nl"],
+        domain_names=["www.thisisadomainname.com"],
         victims=[arp_spoof_victim_ip],
         redirect_ip="192.168.56.102"
     )
