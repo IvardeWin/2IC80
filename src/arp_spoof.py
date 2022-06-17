@@ -84,7 +84,7 @@ class ARPSpoofing(threading.Thread):
                                     hwdst=self.target_mac
                                 )
                                 restore_resp = resp_ether / resp_arp
-                                sendp(restore_resp, iface=self.interface, verbose=True)
+                                sendp(restore_resp, iface=self.interface, verbose=False)
 
                 return
             arp_spoof()

@@ -45,8 +45,8 @@ class Forwarding(threading.Thread):
                             received_packet[ARP].dst = mac
                 sendp(received_packet, iface=self.interface, verbose=False)
                 print("Forwarded ARP packet send by "
-                      + received_packet[IP].src + " to "
-                      + received_packet[IP].dst
+                      + received_packet[ARP].psrc + " to "
+                      + received_packet[ARP].pdst
                       )
 
         print("Now forwarding spoofed ARP and DNS packets...")
