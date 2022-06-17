@@ -44,10 +44,9 @@ class Forwarding(threading.Thread):
                         if ip == received_packet[ARP].pdst:
                             received_packet[ARP].dst = mac
                 sendp(received_packet, iface=self.interface, verbose=False)
-                print("Forwarded ARP packet send by "
-                      + received_packet[ARP].psrc + " to "
-                      + received_packet[ARP].pdst
-                      )
+            else:
+                print("Something went wrong!")
+                received_packet.show()
 
         print("Now forwarding spoofed ARP and DNS packets...")
         while True:

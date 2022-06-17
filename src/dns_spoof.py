@@ -73,10 +73,8 @@ class DNSSpoofing(threading.Thread):
             spoofed_ans = create_spoofed_dns_answer(self.redirect_ip, received_packet)
             # TODO: Set verbose to false or make it configurable
             sendp(spoofed_ans, iface=self.interface, verbose=True)
-            print("Spoofed DNS request sent by host "
-                  + received_packet[IP].src + "for"
-                  + received_packet[DNSQR].qname.decode("utf8")[:-1]
-                  )
+            print(f"Spoofed DNS request sent by host {received_packet[IP].src} for "
+                  f"{received_packet[DNSQR].qname.decode('utf8')[:-1]}")
 
         print("Now DNS spoofing...")
         while True:
