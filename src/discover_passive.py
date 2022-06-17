@@ -1,12 +1,10 @@
-import threading
-
 from scapy import packet
 from scapy.arch import get_if_addr, get_if_hwaddr
 from scapy.error import Scapy_Exception
 from scapy.layers.inet import IP
 from scapy.layers.l2 import ARP, Ether
 from scapy.sendrecv import sniff
-
+import threading
 
 class Discover(threading.Thread):
 
