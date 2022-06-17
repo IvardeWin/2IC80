@@ -32,14 +32,15 @@ class Forwarding(threading.Thread):
 
         def forward(received_packet: packet) -> None:
             # Packet is a DNS request
-            if DNS in received_packet and received_packet[DNS].qr == 0:
+            if ARP not in received_packet:
+                return
+            elif DNS in received_packet and received_packet[DNS].qr == 0:
                 # TODO: check if packet should be forwarded and possible perform SSL stripping
-                pass
-            elif IP in received_packet and received_packet[IP].dst != self.host_ip:
-                # TODO: look up mac address corresponding to spoofed IP and assign it
+                return
+            elif received_packet[ARP].pdst != self.host_ip:
                 for mac in self.hosts[self.interface]:
                     for ip in self.hosts[self.interface][mac]:
-                        if ip == received_packet[IP].dst:
+                        if ip == received_packet[ARP].pdst:
                             received_packet[ARP].dst = mac
                 sendp(received_packet, iface=self.interface, verbose=False)
                 print("Forwarded ARP packet send by "
