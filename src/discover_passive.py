@@ -5,7 +5,7 @@ from scapy.arch import get_if_addr, get_if_hwaddr
 from scapy.error import Scapy_Exception
 from scapy.layers.inet import IP
 from scapy.layers.l2 import ARP, Ether
-from scapy.sendrecv import sniff, srp
+from scapy.sendrecv import sniff
 
 
 class Discover(threading.Thread):
@@ -98,11 +98,3 @@ class Discover(threading.Thread):
             except Scapy_Exception:
                 print(f"Could not operate on interface {self.interface}")
                 self.stop()
-
-    def active(self):
-        try:
-            ip = f"{get_if_addr(self.interface)}/24"
-            frame = ARP(pdst=ip) / Ether(dst="ff:ff:ff:ff:ff:ff")
-            srp(frame, timeout=1, verbose=False)
-        except Exception as e:
-            print(e)
