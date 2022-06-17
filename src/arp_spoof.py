@@ -63,7 +63,7 @@ class ARPSpoofing(threading.Thread):
             for ip in self.spoofed_ips:
                 spoofed_ans = create_spoofed_arp_answer(ip, self.target_ip, self.target_mac)
                 # TODO: Set verbose to False or make it configurable
-                sendp(spoofed_ans, iface=self.interface, verbose=True)
+                sendp(spoofed_ans, iface=self.interface, verbose=False)
 
         print("Now ARP spoofing...")
         while True:
