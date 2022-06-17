@@ -106,12 +106,9 @@ if __name__ == '__main__':
         ips = list()
         for mac_address in hosts[iface]:
             print(mac_address)
-            ips.append(hosts[iface][mac_address])
+            ips.extend(hosts[iface][mac_address])
             print(hosts[iface][mac_address])
         return ips
-
-    print(arp_spoof_victim_if)
-    print(get_ips_at_interface(arp_spoof_victim_if))
 
     spoofed_ips = list()
     while True:
