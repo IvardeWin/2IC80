@@ -3,21 +3,23 @@ from scapy.layers.dns import DNSRR, DNSQR, DNS
 from scapy.layers.l2 import ARP
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import sendp, sniff
+from scapy.arch import get_if_addr
 import threading
 
 
 class Forwarding(threading.Thread):
 
-    def __init__(self, interface: str, host_ip: str):
+    def __init__(self, interface: str, hosts: dict):
         """
         Starts DNS spoofing in a background thread
 
             :param interface: interface on which DNS requests will be sniffed
-            :param host_ip: ip of the host
+            :param hosts: list of discovered hosts, used to forward to correct IP
         """
         super(Forwarding, self).__init__()
         self.interface = interface
-        self.host_ip = host_ip
+        self.hosts = hosts
+        self.host_ip = get_if_addr(interface)
         self._stop = threading.Event()
 
     def stop(self):
@@ -35,8 +37,11 @@ class Forwarding(threading.Thread):
                 pass
             elif IP in received_packet and received_packet[IP].dst != self.host_ip:
                 # TODO: look up mac address corresponding to spoofed IP and assign it
-                received_packet[ARP].dst = "Correct MAC address"
-                sendp(received_packet, iface=self.interface, verbose=True)
+                for mac in self.hosts[self.interface]:
+                    for ip in self.hosts[self.interface][mac]:
+                        if ip == received_packet[IP].dst:
+                            received_packet[ARP].dst = mac
+                sendp(received_packet, iface=self.interface, verbose=False)
                 print("Forwarded ARP packet send by "
                       + received_packet[IP].src + " to "
                       + received_packet[IP].dst

