@@ -7,7 +7,7 @@ import threading
 
 class ARPSpoofing(threading.Thread):
 
-    def __init__(self, interface: str, target_mac: str, target_ip: str, spoofed_ips: list, delay: int):
+    def __init__(self, interface: str, target_mac: str, target_ip: str, spoofed_ips: list, hosts: dict, delay: int):
         """
         Starts ARP spoofing in a background thread
 
@@ -15,6 +15,7 @@ class ARPSpoofing(threading.Thread):
             :param target_mac: mac of the host that will be poisoned
             :param target_ip: ip of the host that will be poisoned
             :param spoofed_ips: ip addresses for which false ARP cache entries will be created
+            :param hosts: dictionary containing info on all discovered hosts, used for restoring caches
             :param delay: delay between outgoing spoofed arp replies
         """
         super(ARPSpoofing, self).__init__()
@@ -22,6 +23,7 @@ class ARPSpoofing(threading.Thread):
         self.target_mac = target_mac
         self.target_ip = target_ip
         self.spoofed_ips = spoofed_ips
+        self.hosts = hosts
         self.delay = delay
         self._stop = threading.Event()
 
@@ -68,9 +70,22 @@ class ARPSpoofing(threading.Thread):
             if self.is_stopped():
                 print("Stopped ARP spoofing")
                 print("Now restoring ARP cache of victim")
-                # TODO:
-                # for ip in self.spoofed_ips:
-                    # create_correct_arp_packet_and_send_it_to_target
+                for spoofed_ip in self.spoofed_ips:
+                    for mac in self.hosts[self.interface]:
+                        for ip in self.hosts[self.interface][mac]:
+                            if spoofed_ip == ip:
+                                # TODO: Move this to function:
+                                resp_ether = Ether(dst=self.target_mac, src=mac)
+                                resp_arp = ARP(
+                                    op=2,  # 2 = ARP response, 1 = ARP request
+                                    psrc=spoofed_ip,
+                                    pdst=self.target_ip,
+                                    hwsrc=mac,
+                                    hwdst=self.target_mac
+                                )
+                                restore_resp = resp_ether / resp_arp
+                                sendp(restore_resp, iface=self.interface, verbose=True)
+
                 return
             arp_spoof()
             time.sleep(self.delay)

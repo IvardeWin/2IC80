@@ -136,6 +136,7 @@ if __name__ == '__main__':
         target_mac=arp_spoof_victim_mac,
         target_ip=arp_spoof_victim_ip,
         spoofed_ips=spoofed_ips,
+        hosts=hosts,
         delay=3
     )
     arp_spoofing.start()
