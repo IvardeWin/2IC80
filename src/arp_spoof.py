@@ -67,7 +67,7 @@ class ARPSpoofing(threading.Thread):
                 spoofed_ans = create_arp_answer(ip, self.host_mac)
                 sendp(spoofed_ans, iface=self.interface, verbose=False)
 
-        print("Now ARP spoofing...")
+        print(f"Now ARP spoofing {self.target_ip}...")
         while True:
             if self.is_stopped():
                 print("Stopped ARP spoofing")

