@@ -172,7 +172,7 @@ if __name__ == '__main__':
             arp_spoof_thread.start()
         forwarding.start()
 
-        input("Press [enter] to stop DNS and ARP spoofing")
+        input("Press [enter] to stop ARP spoofing")
         for arp_spoof_thread in arp_spoofing:
             arp_spoof_thread.stop()
         forwarding.stop()
