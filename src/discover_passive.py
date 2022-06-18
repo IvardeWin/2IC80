@@ -1,3 +1,11 @@
+"""
+Assignment for course 2IC80, Lab on Offensive Computer Security, at TU/e
+Created by;
+Daan Boelhouwers(1457152), d.boelhouwers@student.tue.nl
+Richard Farla(1420380), r.farla@student.tue.nl
+Ivar de Win(1406663), i.j.f.d.win@student.tue.nl
+"""
+
 from scapy import packet
 from scapy.arch import get_if_addr, get_if_hwaddr
 from scapy.error import Scapy_Exception
@@ -5,6 +13,7 @@ from scapy.layers.inet import IP
 from scapy.layers.l2 import ARP, Ether
 from scapy.sendrecv import sniff
 import threading
+
 
 class Discover(threading.Thread):
 
@@ -47,10 +56,12 @@ class Discover(threading.Thread):
             iface_hosts = self.hosts[self.interface]
             if mac not in iface_hosts:
                 iface_hosts.update(dict({mac: [ip]}))
-                print(f"New host discovered on {self.interface}, MAC: {mac} IP: {ip}")
+                print(
+                    f"New host discovered on {self.interface}, MAC: {mac} IP: {ip}")
             elif ip not in iface_hosts[mac]:
                 iface_hosts[mac].append(ip)
-                print(f"New IP discovered on {self.interface} for host with MAC: {mac}, IP: {ip}")
+                print(
+                    f"New IP discovered on {self.interface} for host with MAC: {mac}, IP: {ip}")
 
         def filter_host(mac: str, ip: str):
             """
@@ -62,7 +73,7 @@ class Discover(threading.Thread):
             """
             # Filter out broadcasts
             if mac == "ff:ff:ff:ff:ff:ff":
-                return 
+                return
             # Filter out self
             if mac == get_if_hwaddr(self.interface):
                 return
@@ -86,12 +97,14 @@ class Discover(threading.Thread):
         # Attempt to sniff for packets on the current interface
         while not self.is_stopped():
             try:
-                sniff(iface=self.interface, store=0, timeout=1, prn=packet_sniffed)
+                sniff(iface=self.interface, store=0,
+                      timeout=1, prn=packet_sniffed)
             except IndexError:
                 print(f"Layer not found")
                 self.stop()
             except OSError:
-                print(f"Could not open the adapter for interface {self.interface}")
+                print(
+                    f"Could not open the adapter for interface {self.interface}")
                 self.stop()
             except Scapy_Exception:
                 print(f"Could not operate on interface {self.interface}")

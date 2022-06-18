@@ -1,3 +1,12 @@
+"""
+Assignment for course 2IC80, Lab on Offensive Computer Security, at TU/e
+Created by;
+Daan Boelhouwers(1457152), d.boelhouwers@student.tue.nl
+Richard Farla(1420380), r.farla@student.tue.nl
+Ivar de Win(1406663), i.j.f.d.win@student.tue.nl
+"""
+
+
 from scapy import packet
 from scapy.layers.l2 import Ether, ARP
 from scapy.sendrecv import sendp
@@ -77,10 +86,11 @@ class ARPSpoofing(threading.Thread):
                     for mac in self.hosts[self.interface]:
                         for ip in self.hosts[self.interface][mac]:
                             if spoofed_ip == ip:
-                                restore_resp = create_arp_answer(spoofed_ip, mac)
-                                sendp(restore_resp, iface=self.interface, verbose=False)
+                                restore_resp = create_arp_answer(
+                                    spoofed_ip, mac)
+                                sendp(restore_resp, iface=self.interface,
+                                      verbose=False)
 
                 return
             arp_spoof()
             time.sleep(self.delay)
-

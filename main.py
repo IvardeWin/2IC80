@@ -1,3 +1,11 @@
+"""
+Assignment for course 2IC80, Lab on Offensive Computer Security, at TU/e
+Created by;
+Daan Boelhouwers(1457152), d.boelhouwers@student.tue.nl
+Richard Farla(1420380), r.farla@student.tue.nl
+Ivar de Win(1406663), i.j.f.d.win@student.tue.nl
+"""
+
 from src import arp_spoof as arp
 from src import dns_spoof as dns
 from src import discover_active
