@@ -78,7 +78,7 @@ class Forwarding(threading.Thread):
                     if len(received_packet) > 1500:
                         packets = fragment(received_packet)
                         for pkt in packets:
-                            sendp(pkt, iface=-self.interface, verbose=False)
+                            sendp(pkt, iface=self.interface, verbose=False)
                     else:
                         sendp(received_packet, iface=self.interface, verbose=False)
                 except Exception as e:
