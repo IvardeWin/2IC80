@@ -125,7 +125,7 @@ if __name__ == '__main__':
             print("You should spoof at least two hosts in order to perform a man in the middle attack")
         else:
             print("Host that will be spoofed:")
-            for i in len(arp_spoof_victim_ips):
+            for i in range(len(arp_spoof_victim_ips)):
                 print(f"{arp_spoof_victim_macs[i]}  -  {arp_spoof_victim_ips[i]}")
             break
 
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
     input("Setup ready, press [ENTER] to start ARP and DNS spoofing.")
     arp_spoofing = list()
-    for i in len(arp_spoof_victim_ips):
+    for i in range(len(arp_spoof_victim_ips)):
         arp_spoofing.append(arp.ARPSpoofing(
             interface=arp_spoof_victim_if,
             target_mac=arp_spoof_victim_macs[i],
