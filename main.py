@@ -85,7 +85,7 @@ if __name__ == '__main__':
             for ip in hosts[interface][mac]:
                 print(f"  {mac}  -  {ip}")
 
-    print("Please type the name of the interface on which the hosts you want to ARP were found")
+    print("Please type the name of the interface on which the hosts you want to ARP spoof were found")
     while True:
         user_input = input()
         if user_input in hosts:
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             arp_spoof_victim_ips.append(arp_spoof_victim_ip)
         else:
             print(f"Please type the IP address corresponding to the mac address {arp_spoof_victim_mac}"
-                  f" the host you want to ARP spoof")
+                  f" that you want to ARP spoof")
             while True:
                 user_input = input()
                 if user_input in hosts[arp_spoof_victim_if][arp_spoof_victim_mac]:
@@ -226,7 +226,7 @@ if __name__ == '__main__':
         dns_spoofing.start()
         forwarding.start()
 
-        input("Press [enter] to stop DNS and ARP spoofing")
+        input("Press [ENTER] to stop DNS and ARP spoofing")
         for arp_spoof_thread in arp_spoofing:
             arp_spoof_thread.stop()
         dns_spoofing.stop()
