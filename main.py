@@ -27,7 +27,10 @@ if __name__ == '__main__':
             print(f"Currently selected interfaces: {chosen_interfaces}")
             break
         elif user_input == "done":
-            break
+            if len(chosen_interfaces) == 0:
+                print("You need to select at least one interface!")
+            else:
+                break
         else:
             print("The name you gave does not match any of the available interfaces")
 

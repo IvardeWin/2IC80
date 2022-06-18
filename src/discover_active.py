@@ -8,7 +8,7 @@ def discover(interface: str):
     try:
         ip = f"{get_if_addr(interface)}/24"
         frame = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ip)
-        sendp(frame, iface=interface, timeout=2, verbose=False)
+        sendp(frame, iface=interface, verbose=False)
     except OSError:
         print(f"Could not open the adapter for interface {interface}")
     except Scapy_Exception:
